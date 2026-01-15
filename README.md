@@ -81,3 +81,104 @@ grpc-user-service/
 │   └── server/            # Application entry point
 └── client/
     └── demo/              # Simple demo client
+
+**Key ideas:**
+
+- Business logic is transport-agnostic
+- gRPC code is kept thin and focused
+- Cross-cutting concerns live in interceptors
+
+---
+
+## Error Handling
+
+The service uses gRPC status codes to clearly distinguish failure types:
+
+- `InvalidArgument` — malformed or invalid input
+- `NotFound` — requested user does not exist
+- `AlreadyExists` — conflicting create operations
+- `Internal` — unexpected server errors
+
+Clients are expected to branch on status codes, not error strings.
+
+---
+
+## Deadlines & Cancellation
+
+All gRPC calls are expected to include deadlines.
+
+**Deadlines:**
+- Prevent resource leaks
+- Enable cancellation propagation
+- Avoid cascading failures under partial outages
+
+Server handlers respect `context.Context` and stop work when requests are canceled.
+
+---
+
+## Interceptors
+
+The service demonstrates server-side interceptors for:
+
+- Logging
+- Cross-cutting concerns (auth, metrics, tracing would be added here)
+
+This keeps business logic clean and predictable.
+
+---
+
+## Running the Service
+
+### 1. Generate Protobuf code
+```bash
+protoc \
+  --go_out=. \
+  --go-grpc_out=. \
+  proto/user/v1/user.proto
+```
+
+### 2. Start the server
+```bash
+go run ./cmd/server
+```
+
+The server listens on `:50051`.
+
+### 3. Run the demo client
+```bash
+go run ./client/demo
+```
+
+---
+
+## What This Project Intentionally Omits
+
+To keep the example focused, the following are intentionally left out:
+
+- Persistence beyond an in-memory store
+- Authentication / authorization
+- Docker / Kubernetes configuration
+- CI/CD pipelines
+
+These are orthogonal concerns and would be added based on system requirements.
+
+---
+
+## Intended Audience
+
+This project is intended for:
+
+- Engineers learning gRPC beyond basic tutorials
+- Interview preparation for backend or distributed systems roles
+- Demonstrating API design and system boundaries in Go
+
+---
+
+## Key Takeaways
+
+- gRPC excels at internal, contract-driven APIs
+- Protobuf enforces discipline around evolution
+- Deadlines and structured errors are essential for reliability
+- Clean boundaries matter more than feature count
+
+This repository is meant to reflect how a small, well-designed internal service might look in a larger system.
