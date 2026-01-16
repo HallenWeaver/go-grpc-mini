@@ -16,7 +16,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer(grpc.UnaryInterceptor(server.LoggingInterceptor))
+	s := grpc.NewServer(grpc.ChainUnaryInterceptor(server.LoggingInterceptor, server.AuthInterceptor))
 
 	userv1.RegisterUserServiceServer(s, server.New(store.New()))
 	log.Println("gRPC server listening on :50051")

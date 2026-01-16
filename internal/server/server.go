@@ -5,6 +5,8 @@ import (
 
 	"github.com/HallenWeaver/go-grpc-mini/internal/service"
 	userv1 "github.com/HallenWeaver/go-grpc-mini/proto/user/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -36,6 +38,15 @@ func (s *Server) CreateUser(ctx context.Context, req *userv1.CreateUserRequest) 
 }
 
 func (s *Server) GetUser(ctx context.Context, req *userv1.GetUserRequest) (*userv1.GetUserResponse, error) {
+	uid, ok := UserIDFromContext(ctx)
+	if !ok {
+		return nil, status.Error(codes.Internal, "authenticated identity missing")
+	}
+
+	if uid != req.GetId() {
+		return nil, status.Error(codes.PermissionDenied, "cannot access other user's data")
+	}
+
 	user, err := s.store.GetByID(req.GetId())
 	if err != nil {
 		return nil, err
