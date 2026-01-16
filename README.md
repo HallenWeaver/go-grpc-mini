@@ -136,6 +136,7 @@ protoc \
   --go_out=. \
   --go-grpc_out=. \
   proto/user/v1/user.proto
+```
 
 ### 2. Start the server
 ```bash
