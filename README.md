@@ -81,6 +81,7 @@ grpc-user-service/
 │   └── server/            # Application entry point
 └── client/
     └── demo/              # Simple demo client
+```
 
 **Key ideas:**
 
@@ -135,7 +136,6 @@ protoc \
   --go_out=. \
   --go-grpc_out=. \
   proto/user/v1/user.proto
-```
 
 ### 2. Start the server
 ```bash
